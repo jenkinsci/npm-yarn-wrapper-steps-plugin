@@ -1,4 +1,4 @@
-package io.interrogate.nvm.pipeline.plugin;
+package io.interrogate.npm.pipeline.plugin;
 
 import hudson.FilePath;
 import hudson.Launcher;
