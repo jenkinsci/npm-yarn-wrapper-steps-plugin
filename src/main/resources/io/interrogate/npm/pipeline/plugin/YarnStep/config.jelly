@@ -1,0 +1,8 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  <f:entry title="${%yarn command to run}" field="command">
+    <f:textbox />
+  </f:entry>
+    <f:entry title="${%subdirectory of the workspace to run the command from}" field="workspaceSubdirectory">
+      <f:textbox />
+    </f:entry>
+</j:jelly>

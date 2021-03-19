@@ -12,8 +12,6 @@ public class NVMUtilities {
 
     private static final String DEFAULT_NVM_INSTALLER_URL = "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
 
-    public enum NodeExecutor { NPM, YARN }
-
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl) throws IOException, InterruptedException {
         FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
         if (home.child(".nvm/nvm.sh").exists()) {
@@ -26,8 +24,8 @@ public class NVMUtilities {
                 .pwd(workspace)
                 .cmdAsSingleString("bash -c ./nvm-installer")
                 .stdout(listener.getLogger())
-        .stderr(listener.getLogger())
-        .join();
+                .stderr(listener.getLogger())
+                .join();
         nvmInstaller.delete();
     }
 
@@ -65,4 +63,6 @@ public class NVMUtilities {
     public static ArgumentListBuilder getYarnCommand(String command, boolean isInstallFromNVMRC) {
         return getCommand(command, isInstallFromNVMRC, NodeExecutor.YARN);
     }
+
+    public enum NodeExecutor {NPM, YARN}
 }
