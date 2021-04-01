@@ -58,11 +58,8 @@ public class NPMStep extends Builder implements SimpleBuildStep, Serializable {
             throw new AbortException("Only Unix systems are supported");
         }
         NVMUtilities.install(workspace, launcher, listener);
+        NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
         PrintStream logger = listener.getLogger();
-        envVars.put("NVM_DIR", envVars.get("HOME") + "/.nvm");
-        FilePath nvmrcFilePath = workspace.child(".nvmrc");
-        boolean isInstallFromNVMRC = nvmrcFilePath.exists();
-        ArgumentListBuilder shellCommand = NVMUtilities.getNPMCommand(command, isInstallFromNVMRC);
         FilePath targetDirectory = workspace;
         if (StringUtils.isNotBlank(workspaceSubdirectory)) {
             targetDirectory = workspace.child(workspaceSubdirectory);
@@ -73,6 +70,9 @@ public class NPMStep extends Builder implements SimpleBuildStep, Serializable {
                 throw new AbortException(String.format("%s is not a directory", targetDirectory.toURI().getPath()));
             }
         }
+        FilePath nvmrcFilePath = targetDirectory.child(".nvmrc");
+        boolean isInstallFromNVMRC = nvmrcFilePath.exists();
+        ArgumentListBuilder shellCommand = NVMUtilities.getNPMCommand(command, isInstallFromNVMRC);
         Integer statusCode = launcher.launch()
                 .pwd(targetDirectory)
                 .quiet(true)

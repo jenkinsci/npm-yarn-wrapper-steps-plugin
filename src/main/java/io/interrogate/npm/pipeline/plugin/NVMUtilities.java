@@ -1,5 +1,6 @@
 package io.interrogate.npm.pipeline.plugin;
 
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
@@ -10,6 +11,8 @@ import java.net.URL;
 
 public class NVMUtilities {
 
+    public static final String DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org/";
+    public static final String DEFAULT_NODEJS_VERSION = "node";
     private static final String DEFAULT_NVM_INSTALLER_URL = "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
 
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl) throws IOException, InterruptedException {
@@ -33,7 +36,11 @@ public class NVMUtilities {
         install(workspace, launcher, listener, DEFAULT_NVM_INSTALLER_URL);
     }
 
-    public static ArgumentListBuilder getCommand(String command, boolean isInstallFromNVMRC, NodeExecutor nodeExecutor) {
+    public static void setNVMHomeEnvironmentVariable(EnvVars envVars) {
+        envVars.put("NVM_DIR", String.format("%s/.nvm", envVars.get("HOME")));
+    }
+
+    public static ArgumentListBuilder getCommand(String command, String nodeJSVersion, NodeExecutor nodeExecutor) {
         String executor = "";
         switch (nodeExecutor) {
             case NPM:
@@ -44,16 +51,20 @@ public class NVMUtilities {
         }
 
         ArgumentListBuilder commands = new ArgumentListBuilder();
-        String nodeInstall = isInstallFromNVMRC ? "" : "node";
         String fullCommand = String.format(
                 "source \"$NVM_DIR/nvm.sh\" && nvm install %s && %s %s",
-                nodeInstall,
+                nodeJSVersion,
                 executor,
                 command
         );
         commands.add("bash", "-c", fullCommand);
         return commands;
 
+    }
+
+    public static ArgumentListBuilder getCommand(String command, boolean isInstallFromNVMRC, NodeExecutor nodeExecutor) {
+        String nodeJSVersion = isInstallFromNVMRC ? "" : NVMUtilities.DEFAULT_NODEJS_VERSION;
+        return getCommand(command, nodeJSVersion, nodeExecutor);
     }
 
     public static ArgumentListBuilder getNPMCommand(String command, boolean isInstallFromNVMRC) {

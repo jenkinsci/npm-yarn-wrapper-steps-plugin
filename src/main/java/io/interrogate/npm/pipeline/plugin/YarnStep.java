@@ -58,13 +58,10 @@ public class YarnStep extends Builder implements SimpleBuildStep, Serializable {
             throw new AbortException("Only Unix systems are supported");
         }
         NVMUtilities.install(workspace, launcher, listener);
+        NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
         YarnUtilities.install(workspace, launcher, listener);
         PrintStream logger = listener.getLogger();
-        envVars.put("NVM_DIR", envVars.get("HOME") + "/.nvm");
         envVars.replace("PATH", String.format(YARN_PATH_TEMPLATE, envVars.get("HOME"), envVars.get("HOME"), envVars.get("PATH")));
-        FilePath nvmrcFilePath = workspace.child(".nvmrc");
-        boolean isInstallFromNVMRC = nvmrcFilePath.exists();
-        ArgumentListBuilder shellCommand = NVMUtilities.getYarnCommand(command, isInstallFromNVMRC);
         FilePath targetDirectory = workspace;
         if (StringUtils.isNotBlank(workspaceSubdirectory)) {
             targetDirectory = workspace.child(workspaceSubdirectory);
@@ -75,6 +72,9 @@ public class YarnStep extends Builder implements SimpleBuildStep, Serializable {
                 throw new AbortException(String.format("%s is not a directory", targetDirectory.toURI().getPath()));
             }
         }
+        FilePath nvmrcFilePath = targetDirectory.child(".nvmrc");
+        boolean isInstallFromNVMRC = nvmrcFilePath.exists();
+        ArgumentListBuilder shellCommand = NVMUtilities.getYarnCommand(command, isInstallFromNVMRC);
         Integer statusCode = launcher.launch()
                 .pwd(targetDirectory)
                 .quiet(true)

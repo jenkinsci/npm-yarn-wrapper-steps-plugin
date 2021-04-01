@@ -27,6 +27,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.jenkins-ci.plugins:credentials:2.3.15'
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13'
 }
