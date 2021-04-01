@@ -17,7 +17,15 @@ description = 'A convenience plugin for using npm and yarn in Jenkins pipelines'
 jenkinsPlugin {
     jenkinsVersion = '2.277.1'
     shortName = 'npm-pipeline'
+    displayName = 'NPM Pipeline Plugin'
     description = 'A convenience plugin for using npm and yarn in Jenkins pipelines'
+    developers {
+        developer {
+            id 'jameslafferty'
+            name 'James Lafferty'
+            email 'james@nearlysensical.com'
+        }
+    }
 }
 
 repositories {
