@@ -69,8 +69,9 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
     @SuppressWarnings("rawtypes")
     @Override
     public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars envVars) throws IOException, InterruptedException {
-        context.env("NPM_REGISTRY", npmRegistry);
-        context.env("NODEJS_VERSION", nodeJSVersion);
+        if (!launcher.isUnix()) {
+            throw new AbortException("Only Unix systems are supported");
+        }
         NVMUtilities.install(workspace, launcher, listener);
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
         PrintStream logger = listener.getLogger();
