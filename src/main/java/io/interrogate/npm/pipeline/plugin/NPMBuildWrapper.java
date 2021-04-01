@@ -3,7 +3,11 @@ package io.interrogate.npm.pipeline.plugin;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import hudson.*;
+import hudson.AbortException;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Run;
@@ -34,22 +38,13 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
     private static final String NPM_CONFIG_REGISTRY_COMMAND = "config set registry %s";
 
     private String credentialsId = "";
-    private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
     private String nodeJSVersion = NVMUtilities.DEFAULT_NODEJS_VERSION;
+    private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
+    private String npmUserEmail = "";
 
     @DataBoundConstructor
     public NPMBuildWrapper(String credentialsId) {
         this.credentialsId = credentialsId;
-    }
-
-    @NonNull
-    public String getNpmRegistry() {
-        return npmRegistry;
-    }
-
-    @DataBoundSetter
-    public void setNpmRegistry(String npmRegistry) {
-        this.npmRegistry = npmRegistry;
     }
 
     @NonNull
@@ -62,20 +57,46 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         this.nodeJSVersion = nodeJSVersion;
     }
 
+    @NonNull
+    public String getNpmRegistry() {
+        return npmRegistry;
+    }
+
+    @DataBoundSetter
+    public void setNpmRegistry(String npmRegistry) {
+        this.npmRegistry = npmRegistry;
+    }
+
+    /**
+     * @return
+     */
+    @NonNull
+    public String getNpmUserEmail() {
+        return npmUserEmail;
+    }
+
+    @DataBoundSetter
+    public void setNpmUserEmail(String npmUserEmail) {
+        this.npmUserEmail = npmUserEmail;
+    }
+
     public String getCredentialsId() {
         return credentialsId;
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars envVars) throws IOException, InterruptedException {
+    public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener,
+                      EnvVars envVars) throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
             throw new AbortException("Only Unix systems are supported");
         }
         NVMUtilities.install(workspace, launcher, listener);
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
         PrintStream logger = listener.getLogger();
-        ArgumentListBuilder configCommand = NVMUtilities.getCommand(String.format(NPM_CONFIG_REGISTRY_COMMAND, npmRegistry), nodeJSVersion, NVMUtilities.NodeExecutor.NPM);
+        ArgumentListBuilder configCommand = NVMUtilities
+                .getCommand(String.format(NPM_CONFIG_REGISTRY_COMMAND, npmRegistry), nodeJSVersion,
+                        NVMUtilities.NodeExecutor.NPM);
         Integer statusCode = launcher.launch()
                 .quiet(true)
                 .envs(envVars)
@@ -106,7 +127,8 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentials) {
             return new StandardListBoxModel()
                     .includeEmptyValue()
-                    .includeMatching(item, StandardUsernamePasswordCredentials.class, Collections.emptyList(), CredentialsMatchers.always())
+                    .includeMatching(item, StandardUsernamePasswordCredentials.class, Collections.emptyList(),
+                            CredentialsMatchers.always())
                     .includeCurrentValue(credentials);
         }
     }

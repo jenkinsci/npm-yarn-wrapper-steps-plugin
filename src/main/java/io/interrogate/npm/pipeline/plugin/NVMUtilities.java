@@ -13,9 +13,11 @@ public class NVMUtilities {
 
     public static final String DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org/";
     public static final String DEFAULT_NODEJS_VERSION = "node";
-    private static final String DEFAULT_NVM_INSTALLER_URL = "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
+    private static final String DEFAULT_NVM_INSTALLER_URL =
+            "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
 
-    public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl) throws IOException, InterruptedException {
+    public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl)
+            throws IOException, InterruptedException {
         FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
         if (home.child(".nvm/nvm.sh").exists()) {
             return;
@@ -32,7 +34,8 @@ public class NVMUtilities {
         nvmInstaller.delete();
     }
 
-    public static void install(FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
+    public static void install(FilePath workspace, Launcher launcher, TaskListener listener)
+            throws IOException, InterruptedException {
         install(workspace, launcher, listener, DEFAULT_NVM_INSTALLER_URL);
     }
 
@@ -62,7 +65,8 @@ public class NVMUtilities {
 
     }
 
-    public static ArgumentListBuilder getCommand(String command, boolean isInstallFromNVMRC, NodeExecutor nodeExecutor) {
+    public static ArgumentListBuilder getCommand(String command, boolean isInstallFromNVMRC,
+                                                 NodeExecutor nodeExecutor) {
         String nodeJSVersion = isInstallFromNVMRC ? "" : NVMUtilities.DEFAULT_NODEJS_VERSION;
         return getCommand(command, nodeJSVersion, nodeExecutor);
     }
