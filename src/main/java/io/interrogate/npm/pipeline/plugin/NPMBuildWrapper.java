@@ -1,8 +1,7 @@
 package io.interrogate.npm.pipeline.plugin;
 
-import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -12,9 +11,11 @@ import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.security.ACL;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.ListBoxModel;
+import io.interrogate.npm.pipeline.plugin.credentials.NPMCredentialsImplementation;
 import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 
 public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable {
 
@@ -125,11 +127,15 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         }
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentials) {
-            return new StandardListBoxModel()
+            List<NPMCredentialsImplementation> credentialsList = CredentialsProvider
+                    .lookupCredentials(NPMCredentialsImplementation.class, item, ACL.SYSTEM, Collections.emptyList());
+            ListBoxModel result = new StandardListBoxModel()
                     .includeEmptyValue()
-                    .includeMatching(item, StandardUsernamePasswordCredentials.class, Collections.emptyList(),
-                            CredentialsMatchers.always())
                     .includeCurrentValue(credentials);
+            for (NPMCredentialsImplementation credential : credentialsList) {
+                result.add(credential.getId());
+            }
+            return result;
         }
     }
 }
