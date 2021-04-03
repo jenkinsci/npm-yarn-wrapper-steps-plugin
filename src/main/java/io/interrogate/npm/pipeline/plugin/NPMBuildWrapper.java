@@ -13,7 +13,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.tasks.BuildWrapperDescriptor;
-import hudson.util.ArgumentListBuilder;
 import hudson.util.ListBoxModel;
 import io.interrogate.npm.pipeline.plugin.credentials.NPMCredentialsImplementation;
 import jenkins.tasks.SimpleBuildWrapper;
@@ -27,6 +26,8 @@ import org.springframework.lang.NonNull;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,12 +38,11 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
      */
     private static final long serialVersionUID = 1L;
 
-    private static final String NPM_CONFIG_REGISTRY_COMMAND = "config set registry %s";
+    private static final String NPM_CONFIG_COMMAND = "config set %s %s";
 
     private String credentialsId = "";
     private String nodeJSVersion = NVMUtilities.DEFAULT_NODEJS_VERSION;
     private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
-    private String npmUserEmail = "";
 
     @DataBoundConstructor
     public NPMBuildWrapper(String credentialsId) {
@@ -59,29 +59,6 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         this.nodeJSVersion = nodeJSVersion;
     }
 
-    @NonNull
-    public String getNpmRegistry() {
-        return npmRegistry;
-    }
-
-    @DataBoundSetter
-    public void setNpmRegistry(String npmRegistry) {
-        this.npmRegistry = npmRegistry;
-    }
-
-    /**
-     * @return
-     */
-    @NonNull
-    public String getNpmUserEmail() {
-        return npmUserEmail;
-    }
-
-    @DataBoundSetter
-    public void setNpmUserEmail(String npmUserEmail) {
-        this.npmUserEmail = npmUserEmail;
-    }
-
     public String getCredentialsId() {
         return credentialsId;
     }
@@ -93,22 +70,24 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         if (!launcher.isUnix()) {
             throw new AbortException("Only Unix systems are supported");
         }
+        PrintStream logger = listener.getLogger();
+        NPMCredentialsImplementation credential = CredentialsProvider
+                .findCredentialById(credentialsId, NPMCredentialsImplementation.class, build, Collections.emptyList());
+        String _auth = null;
+        String email = null;
+        if (credential != null) {
+            npmRegistry = credential.getRegistry();
+            _auth = Base64.getEncoder().encodeToString(
+                    String.format("%s:%s", credential.getUsername(), credential.getPassword().getPlainText()).getBytes(
+                            StandardCharsets.UTF_8));
+            email = credential.getUserEmail();
+        }
         NVMUtilities.install(workspace, launcher, listener);
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
-        PrintStream logger = listener.getLogger();
-        ArgumentListBuilder configCommand = NVMUtilities
-                .getCommand(String.format(NPM_CONFIG_REGISTRY_COMMAND, npmRegistry), nodeJSVersion,
-                        NVMUtilities.NodeExecutor.NPM);
-        Integer statusCode = launcher.launch()
-                .quiet(true)
-                .envs(envVars)
-                .pwd(workspace)
-                .cmds(configCommand)
-                .stdout(logger)
-                .stderr(logger).join();
-
-        if (statusCode != 0) {
-            throw new AbortException("");
+        NVMUtilities.setNPMConfig("registry", npmRegistry, nodeJSVersion, workspace, launcher, logger, envVars);
+        if (_auth != null && email != null) {
+            NVMUtilities.setNPMConfig("email", email, nodeJSVersion, workspace, launcher, logger, envVars);
+            NVMUtilities.setNPMConfig("_auth", _auth, nodeJSVersion, workspace, launcher, logger, envVars);
         }
     }
 

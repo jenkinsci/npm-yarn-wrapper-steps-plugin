@@ -1,5 +1,6 @@
 package io.interrogate.npm.pipeline.plugin;
 
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -7,6 +8,7 @@ import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 
 public class NVMUtilities {
@@ -15,6 +17,7 @@ public class NVMUtilities {
     public static final String DEFAULT_NODEJS_VERSION = "node";
     private static final String DEFAULT_NVM_INSTALLER_URL =
             "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
+    private static final String NPM_CONFIG_COMMAND = "config set %s %s";
 
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl)
             throws IOException, InterruptedException {
@@ -77,6 +80,22 @@ public class NVMUtilities {
 
     public static ArgumentListBuilder getYarnCommand(String command, boolean isInstallFromNVMRC) {
         return getCommand(command, isInstallFromNVMRC, NodeExecutor.YARN);
+    }
+
+    public static void setNPMConfig(String key, String value, String nodeJSVersion, FilePath workspace, Launcher launcher, PrintStream logger, EnvVars envVars)
+            throws IOException, InterruptedException {
+        ArgumentListBuilder _authCommand = NVMUtilities
+                .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), nodeJSVersion,
+                        NVMUtilities.NodeExecutor.NPM);
+        Integer statusCode = launcher.launch()
+                .quiet(true)
+                .envs(envVars)
+                .pwd(workspace)
+                .cmds(_authCommand)
+                .stdout(logger).join();
+        if (statusCode != 0) {
+            throw new AbortException("");
+        }
     }
 
     public enum NodeExecutor {NPM, YARN}
