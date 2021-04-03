@@ -38,8 +38,6 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
      */
     private static final long serialVersionUID = 1L;
 
-    private static final String NPM_CONFIG_COMMAND = "config set %s %s";
-
     private String credentialsId = "";
     private String nodeJSVersion = NVMUtilities.DEFAULT_NODEJS_VERSION;
     private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
@@ -107,6 +105,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentials) {
             List<NPMCredentialsImplementation> credentialsList = CredentialsProvider
+                    // TODO: replace ACL.SYSTEM with something not deprecated
                     .lookupCredentials(NPMCredentialsImplementation.class, item, ACL.SYSTEM, Collections.emptyList());
             ListBoxModel result = new StandardListBoxModel()
                     .includeEmptyValue()
