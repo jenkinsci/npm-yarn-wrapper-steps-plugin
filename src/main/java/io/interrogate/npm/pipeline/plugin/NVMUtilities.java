@@ -82,7 +82,8 @@ public class NVMUtilities {
         return getCommand(command, isInstallFromNVMRC, NodeExecutor.YARN);
     }
 
-    public static void setNPMConfig(String key, String value, String nodeJSVersion, FilePath workspace, Launcher launcher, PrintStream logger, EnvVars envVars)
+    public static void setNPMConfig(String key, String value, String nodeJSVersion, FilePath workspace,
+                                    Launcher launcher, PrintStream logger, EnvVars envVars)
             throws IOException, InterruptedException {
         ArgumentListBuilder _authCommand = NVMUtilities
                 .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), nodeJSVersion,

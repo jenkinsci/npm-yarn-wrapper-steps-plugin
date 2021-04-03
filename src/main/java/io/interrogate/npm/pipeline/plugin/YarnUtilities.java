@@ -11,7 +11,8 @@ public class YarnUtilities {
 
     private static final String DEFAULT_YARN_INSTALLER_URL = "https://yarnpkg.com/install.sh";
 
-    public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String yarnInstallerUrl) throws IOException, InterruptedException {
+    public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String yarnInstallerUrl)
+            throws IOException, InterruptedException {
         FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
         if (home.child(".yarn").exists()) {
             return;
@@ -28,7 +29,8 @@ public class YarnUtilities {
         yarnInstaller.delete();
     }
 
-    public static void install(FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
+    public static void install(FilePath workspace, Launcher launcher, TaskListener listener)
+            throws IOException, InterruptedException {
         install(workspace, launcher, listener, DEFAULT_YARN_INSTALLER_URL);
     }
 }

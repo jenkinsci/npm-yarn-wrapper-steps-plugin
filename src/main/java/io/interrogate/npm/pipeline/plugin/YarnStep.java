@@ -1,6 +1,10 @@
 package io.interrogate.npm.pipeline.plugin;
 
-import hudson.*;
+import hudson.AbortException;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -53,7 +57,8 @@ public class YarnStep extends Builder implements SimpleBuildStep, Serializable {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void perform(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
+    public void perform(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
+            throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
             throw new AbortException("Only Unix systems are supported");
         }
@@ -61,7 +66,8 @@ public class YarnStep extends Builder implements SimpleBuildStep, Serializable {
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
         YarnUtilities.install(workspace, launcher, listener);
         PrintStream logger = listener.getLogger();
-        envVars.replace("PATH", String.format(YARN_PATH_TEMPLATE, envVars.get("HOME"), envVars.get("HOME"), envVars.get("PATH")));
+        envVars.replace("PATH",
+                String.format(YARN_PATH_TEMPLATE, envVars.get("HOME"), envVars.get("HOME"), envVars.get("PATH")));
         FilePath targetDirectory = workspace;
         if (StringUtils.isNotBlank(workspaceSubdirectory)) {
             targetDirectory = workspace.child(workspaceSubdirectory);
