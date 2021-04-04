@@ -10,6 +10,11 @@ import org.springframework.lang.NonNull;
 import javax.annotation.CheckForNull;
 
 public class NPMCredentialsImplementation extends BaseStandardCredentials implements NPMCredentials {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private final String registry;
     private final String userEmail;
     private final String username;

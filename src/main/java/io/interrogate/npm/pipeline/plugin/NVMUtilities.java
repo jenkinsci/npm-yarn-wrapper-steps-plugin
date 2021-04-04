@@ -6,6 +6,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import jenkins.tasks.SimpleBuildWrapper;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -44,6 +45,12 @@ public class NVMUtilities {
 
     public static void setNVMHomeEnvironmentVariable(EnvVars envVars) {
         envVars.put("NVM_DIR", String.format("%s/.nvm", envVars.get("HOME")));
+    }
+
+    public static void setNVMHomeEnvironmentVariable(EnvVars envVars, SimpleBuildWrapper.Context context) {
+        String NVM_DIR = String.format("%s/.nvm", envVars.get("HOME"));
+        envVars.put("NVM_DIR", NVM_DIR);
+        context.env("NVM_DIR", NVM_DIR);
     }
 
     public static ArgumentListBuilder getCommand(String command, String nodeJSVersion, NodeExecutor nodeExecutor) {
