@@ -1,14 +1,5 @@
 package io.interrogate.npm.pipeline.plugin;
 
-import java.io.IOException;
-import java.io.Serializable;
-
-import javax.annotation.CheckForNull;
-
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.springframework.lang.NonNull;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -21,6 +12,13 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.springframework.lang.NonNull;
+
+import javax.annotation.CheckForNull;
+import java.io.IOException;
+import java.io.Serializable;
 
 public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
 
