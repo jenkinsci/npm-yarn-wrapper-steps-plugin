@@ -12,13 +12,13 @@ plugins {
 }
 sourceCompatibility = '1.8'
 group = 'org.jenkins-ci.plugins'
-description = 'A convenience plugin for using npm and yarn in Jenkins pipelines'
+description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
 
 jenkinsPlugin {
     jenkinsVersion = '2.277.1'
     shortName = 'npm-pipeline'
     displayName = 'NPM Pipeline Plugin'
-    description = 'A convenience plugin for using npm and yarn in Jenkins pipelines'
+    description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
     developers {
         developer {
             id 'jameslafferty'
