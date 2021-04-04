@@ -27,6 +27,12 @@ jenkinsPlugin {
             email 'james@nearlysensical.com'
         }
     }
+    licenses {
+        license {
+            name 'MIT License'
+            url 'https://james-lafferty.mit-license.org/license.txt'
+        }
+    }
 }
 
 repositories {
