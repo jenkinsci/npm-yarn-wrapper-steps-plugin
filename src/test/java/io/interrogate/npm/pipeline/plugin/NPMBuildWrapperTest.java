@@ -1,5 +1,6 @@
 package io.interrogate.npm.pipeline.plugin;
 
+import io.interrogate.npmyarnwrappersteps.plugin.NPMBuildWrapper;
 import org.junit.Assert;
 import org.junit.Test;
 

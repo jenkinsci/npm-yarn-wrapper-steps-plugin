@@ -1,4 +1,4 @@
-package io.interrogate.npm.pipeline.plugin;
+package io.interrogate.npmyarnwrappersteps.plugin;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
@@ -14,7 +14,7 @@ import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ListBoxModel;
-import io.interrogate.npm.pipeline.plugin.credentials.NPMCredentialsImplementation;
+import io.interrogate.npmyarnwrappersteps.plugin.credentials.NPMCredentialsImplementation;
 import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;

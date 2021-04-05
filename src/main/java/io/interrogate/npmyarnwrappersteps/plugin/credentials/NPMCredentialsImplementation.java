@@ -1,4 +1,4 @@
-package io.interrogate.npm.pipeline.plugin.credentials;
+package io.interrogate.npmyarnwrappersteps.plugin.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;

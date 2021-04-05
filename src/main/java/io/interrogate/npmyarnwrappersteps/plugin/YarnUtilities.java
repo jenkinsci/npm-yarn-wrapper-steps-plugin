@@ -1,4 +1,4 @@
-package io.interrogate.npm.pipeline.plugin;
+package io.interrogate.npmyarnwrappersteps.plugin;
 
 import hudson.EnvVars;
 import hudson.FilePath;
