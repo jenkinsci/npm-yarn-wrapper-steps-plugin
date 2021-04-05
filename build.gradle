@@ -11,7 +11,7 @@ plugins {
     id 'org.jenkins-ci.jpi' version '0.42.0'
 }
 sourceCompatibility = '1.8'
-group = 'org.jenkins-ci.plugins'
+group = 'io.jenkins.plugins'
 version = "0.0.1-SNAPSHOT"
 description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
 
@@ -20,6 +20,8 @@ jenkinsPlugin {
     shortName = 'npm-yarn-wrapper-steps'
     displayName = 'NPM and Yarn Wrapper and Steps'
     description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
+    url = 'https://github.com/jameslafferty/npm-yarn-wrapper-steps-plugin'
+    gitHubUrl = 'https://github.com/jameslafferty/npm-yarn-wrapper-steps-plugin'
     developers {
         developer {
             id 'jameslafferty'
