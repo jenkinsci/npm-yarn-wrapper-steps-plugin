@@ -48,10 +48,12 @@ public abstract class NodeStep extends Builder {
         if (StringUtils.isNotBlank(workspaceSubdirectory)) {
             targetDirectory = workspace.child(workspaceSubdirectory);
             if (!targetDirectory.exists()) {
-                throw new AbortException(String.format("%s does not exist", targetDirectory.toURI().getPath()));
+                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryDoesNotExist(),
+                        targetDirectory.toURI().getPath()));
             }
             if (!targetDirectory.isDirectory()) {
-                throw new AbortException(String.format("%s is not a directory", targetDirectory.toURI().getPath()));
+                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryIsNotADirectory(),
+                        targetDirectory.toURI().getPath()));
             }
         }
         return targetDirectory;

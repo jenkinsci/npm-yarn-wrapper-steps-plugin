@@ -70,7 +70,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
     public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener,
                       EnvVars envVars) throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
-            throw new AbortException("Only Unix systems are supported");
+            throw new AbortException(Messages.Error_OnlyUnixSystemsAreSupported());
         }
         PrintStream logger = listener.getLogger();
         String npmConfigUserConfig = String.format("%s/.npmrc", envVars.get("WORKSPACE_TMP"));
@@ -105,7 +105,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
 
         @Override
         public String getDisplayName() {
-            return "Set NPM Environment";
+            return Messages.NPMBuildWrapper_SetNPMEnvironment();
         }
 
         @Override

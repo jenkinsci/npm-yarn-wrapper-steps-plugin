@@ -42,7 +42,7 @@ public class YarnStep extends NodeStep implements SimpleBuildStep, Serializable 
     public void perform(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
-            throw new AbortException("Only Unix systems are supported");
+            throw new AbortException(Messages.Error_OnlyUnixSystemsAreSupported());
         }
         setUpNVM(build, workspace, envVars, launcher, listener);
         YarnUtilities.install(workspace, launcher, listener);
@@ -59,7 +59,7 @@ public class YarnStep extends NodeStep implements SimpleBuildStep, Serializable 
 
         @Override
         public String getDisplayName() {
-            return "Run a yarn command";
+            return Messages.YarnStep_RunAYarnCommand();
         }
 
         @SuppressWarnings("rawtypes")

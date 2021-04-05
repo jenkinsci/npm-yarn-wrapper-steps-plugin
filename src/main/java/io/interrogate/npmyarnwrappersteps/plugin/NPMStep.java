@@ -45,7 +45,7 @@ public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
     public void perform(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
-            throw new AbortException("Only Unix systems are supported");
+            throw new AbortException(Messages.Error_OnlyUnixSystemsAreSupported());
         }
         setUpNVM(build, workspace, envVars, launcher, listener);
         FilePath targetDirectory = getTargetDirectory(workspace);
@@ -60,7 +60,7 @@ public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
 
         @Override
         public String getDisplayName() {
-            return "Run an npm command";
+            return Messages.NPMStep_RunAnNPMCommand();
         }
 
         @SuppressWarnings("rawtypes")
