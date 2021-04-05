@@ -1,12 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:c="/lib/credentials" xmlns:f="/lib/form">
-  <f:entry title="${%NPM Registry}" field="npmRegistry">
-    <f:textbox />
-  </f:entry>
   <f:entry field="credentialsId" title="${%NPM Registry Credentials}">
     <c:select />
-  </f:entry>
-  <f:entry title="${%NPM User Email}" field="npmUserEmail">
-    <f:textbox />
   </f:entry>
   <f:entry title="${%NodeJS Version}" field="nodeJSVersions">
     <f:textbox />
