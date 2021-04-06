@@ -99,7 +99,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         context.env(String.format("JENKINS_NVM_SETUP_FOR_BUILD_%s", build.getId()), "TRUE");
     }
 
-    @Symbol("npmWrapper")
+    @Symbol("withNPMWrapper")
     @Extension
     public static class DescriptorImplementation extends BuildWrapperDescriptor {
 

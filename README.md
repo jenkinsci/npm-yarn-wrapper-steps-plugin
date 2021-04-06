@@ -46,7 +46,7 @@ pipeline {
     stages {
         stage('Hello') {
             steps {
-                npmWrapper('MyCredential') {
+                withNPMWrapper('MyCredential') {
                     npm 'init -y'
                     npm command: 'publish'
                 }
