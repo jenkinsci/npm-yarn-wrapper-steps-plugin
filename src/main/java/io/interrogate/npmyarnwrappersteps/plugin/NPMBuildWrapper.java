@@ -15,6 +15,7 @@ import hudson.security.ACL;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ListBoxModel;
 import io.interrogate.npmyarnwrappersteps.plugin.credentials.NPMCredentialsImplementation;
+import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
@@ -113,16 +114,26 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
             return true;
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentials) {
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
+            StandardListBoxModel result = new StandardListBoxModel();
+            if (item == null) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            } else {
+                if (!item.hasPermission(Item.EXTENDED_READ) &&
+                        !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            }
             List<NPMCredentialsImplementation> credentialsList = CredentialsProvider
                     // TODO: replace ACL.SYSTEM with something not deprecated
                     .lookupCredentials(NPMCredentialsImplementation.class, item, ACL.SYSTEM, Collections.emptyList());
-            ListBoxModel result = new StandardListBoxModel()
-                    .includeEmptyValue()
-                    .includeCurrentValue(credentials);
+            result.includeEmptyValue();
             for (NPMCredentialsImplementation credential : credentialsList) {
                 result.add(credential.getId());
             }
+            result.includeCurrentValue(credentialsId);
             return result;
         }
     }
