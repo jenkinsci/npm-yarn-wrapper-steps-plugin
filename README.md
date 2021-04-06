@@ -47,6 +47,11 @@ will be executed from that subdirectory of the workspace.
 
 ### Yarn Step
 
+The yarn step supports anything that completes `yarn #{your command here}`. If you provide a subdirectory, the command
+will be executed from that subdirectory of the workspace.
+
+![Enter a yarn command](images/freestyle-yarn-build-step-1.png?raw=true "Enter a yarn command")
+
 ## Wrapper in Pipelines
 
 The plugin includes a special credential type for npm, which is used in the wrapper to support private npm repositories.
