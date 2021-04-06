@@ -19,9 +19,8 @@ jenkinsPlugin {
     jenkinsVersion = '2.277.1'
     shortName = 'npm-yarn-wrapper-steps'
     displayName = 'NPM and Yarn Wrapper and Steps'
-    description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
-    url = 'https://github.com/jameslafferty/npm-yarn-wrapper-steps-plugin'
-    gitHubUrl = 'https://github.com/jameslafferty/npm-yarn-wrapper-steps-plugin'
+    url = 'https://github.com/jenkinsci/npm-yarn-wrapper-steps-plugin'
+    gitHubUrl = 'https://github.com/jenkinsci/npm-yarn-wrapper-steps-plugin'
     developers {
         developer {
             id 'jameslafferty'
