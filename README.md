@@ -24,6 +24,12 @@ ensure that the credentials are correct prior to storing them.
 
 ## Wrapper in Freestyle Projects
 
+To set up the wrapper, select an NPM Login Credential and, optionally, set a subdirectory of the workspace to use when
+setting up NodeJS. The primary reason to add a workspace subdirectory to the wrapper is if you're using an .nvmrc file
+to manage your NodeJS version.
+
+![Fill in the appropriate login information.](images/freestyle-wrapper-1.png?raw=true "Provide the correct credentials")
+
 ## Steps in Freestyle Projects
 
 ## Wrapper in Pipelines
