@@ -62,7 +62,7 @@ public class NPMCredentialsImplementation extends BaseStandardCredentials implem
 
         @Override
         public String getDisplayName() {
-            return "NPM Login Credentials";
+            return Messages.NPMCredentialsImplementation_NPMLoginCredentials();
         }
 
     }
