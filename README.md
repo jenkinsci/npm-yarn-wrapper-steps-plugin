@@ -10,9 +10,15 @@ stable version of NodeJS. The wrapper allows specifying a workspace subdirectory
 providing login credentials.
 
 ## NPM Credentials
-Users can provide credentials for a private or corporate NPM repository by setting them up through the custom NPM Credential type. To do so, navigate to manage credentials within Jenkins and provide the appropriate url, username, user email and password.
+
+Users can provide credentials for a private or corporate NPM repository by setting them up through the custom NPM
+Credential type. To do so, navigate to manage credentials within Jenkins and provide the appropriate url, username, user
+email and password.
 
 ![Select NPM Login Credentials as the credential kind.](images/credentials-1.png?raw=true "Select NPM Login Credentials")
+
+Fill in the form with the correct credentials for your Artifactory. Note that currently _no_ validation is done to
+ensure that the credentials are correct prior to storing them.
 
 ![Fill in the appropriate login information.](images/credentials-2.png?raw=true "Provide the correct credentials")
 
