@@ -32,7 +32,7 @@ public abstract class NodeStep extends Builder {
     void doCommand(Launcher launcher, FilePath targetDirectory, EnvVars envVars, ArgumentListBuilder shellCommand,
                    PrintStream logger)
             throws IOException, InterruptedException {
-        Integer statusCode = launcher.launch()
+        int statusCode = launcher.launch()
                 .pwd(targetDirectory)
                 .quiet(true)
                 .envs(envVars)
@@ -44,28 +44,21 @@ public abstract class NodeStep extends Builder {
     }
 
     FilePath getTargetDirectory(FilePath workspace) throws IOException, InterruptedException {
-        FilePath targetDirectory = workspace;
-        if (StringUtils.isNotBlank(workspaceSubdirectory)) {
-            targetDirectory = workspace.child(workspaceSubdirectory);
-            if (!targetDirectory.exists()) {
-                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryDoesNotExist(),
-                        targetDirectory.toURI().getPath()));
-            }
-            if (!targetDirectory.isDirectory()) {
-                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryIsNotADirectory(),
-                        targetDirectory.toURI().getPath()));
-            }
-        }
-        return targetDirectory;
+        return NVMUtilities.getTargetDirectory(workspace, workspaceSubdirectory);
     }
 
     @SuppressWarnings("rawtypes")
     public void setUpNVM(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
-        boolean isNVMSetup = envVars.get(String.format("JENKINS_NVM_SETUP_FOR_BUILD_%s", build.getId())) == "TRUE";
+        boolean isNVMSetup =
+                envVars.get(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId())).equals("TRUE");
         if (!isNVMSetup) {
             NVMUtilities.install(workspace, launcher, listener);
             NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
+        }
+        String JENKINS_NPM_WORKSPACE_SUBDIRECTORY = envVars.get(NPMBuildWrapper.JENKINS_NPM_WORKSPACE_SUBDIRECTORY);
+        if (StringUtils.isNotBlank(JENKINS_NPM_WORKSPACE_SUBDIRECTORY)) {
+            setWorkspaceSubdirectory(JENKINS_NPM_WORKSPACE_SUBDIRECTORY);
         }
     }
 }

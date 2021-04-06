@@ -7,6 +7,7 @@ import hudson.Launcher;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import jenkins.tasks.SimpleBuildWrapper;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -20,6 +21,7 @@ public class NVMUtilities {
             "https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh";
     private static final String NPM_CONFIG_COMMAND = "config set %s %s";
 
+    @SuppressWarnings("OctalInteger")
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl)
             throws IOException, InterruptedException {
         FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
@@ -89,13 +91,18 @@ public class NVMUtilities {
         return getCommand(command, isInstallFromNVMRC, NodeExecutor.YARN);
     }
 
-    public static void setNPMConfig(String key, String value, String nodeJSVersion, FilePath workspace,
+    public static void setNPMConfig(String key, String value, String workspaceSubdirectory, FilePath workspace,
                                     Launcher launcher, PrintStream logger, EnvVars envVars)
             throws IOException, InterruptedException {
+        FilePath targetDirectory = getTargetDirectory(workspace, workspaceSubdirectory);
+        boolean isInstallFromNVMRC = false;
+        if (targetDirectory.child(".nvmrc").exists()) {
+            isInstallFromNVMRC = true;
+        }
         ArgumentListBuilder _authCommand = NVMUtilities
-                .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), nodeJSVersion,
+                .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), isInstallFromNVMRC,
                         NVMUtilities.NodeExecutor.NPM);
-        Integer statusCode = launcher.launch()
+        int statusCode = launcher.launch()
                 .quiet(true)
                 .envs(envVars)
                 .pwd(workspace)
@@ -104,6 +111,23 @@ public class NVMUtilities {
         if (statusCode != 0) {
             throw new AbortException("");
         }
+    }
+
+    public static FilePath getTargetDirectory(FilePath workspace, String workspaceSubdirectory)
+            throws IOException, InterruptedException {
+        FilePath targetDirectory = workspace;
+        if (StringUtils.isNotBlank(workspaceSubdirectory)) {
+            targetDirectory = workspace.child(workspaceSubdirectory);
+            if (!targetDirectory.exists()) {
+                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryDoesNotExist(),
+                        targetDirectory.toURI().getPath()));
+            }
+            if (!targetDirectory.isDirectory()) {
+                throw new AbortException(String.format(Messages.NodeStep_targetDirectoryIsNotADirectory(),
+                        targetDirectory.toURI().getPath()));
+            }
+        }
+        return targetDirectory;
     }
 
     public enum NodeExecutor {NPM, YARN}

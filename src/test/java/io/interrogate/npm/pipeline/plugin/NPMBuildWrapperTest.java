@@ -13,11 +13,11 @@ public class NPMBuildWrapperTest {
     }
 
     @Test
-    public void testNodeJSVersion() {
+    public void testWorkspaceSubdirectory() {
         NPMBuildWrapper npmBuildWrapper = new NPMBuildWrapper("");
-        npmBuildWrapper.setNodeJSVersion("nodeJSVersion");
-        String nodeJSVersion = npmBuildWrapper.getNodeJSVersion();
-        Assert.assertEquals("nodeJSVersion", nodeJSVersion);
+        npmBuildWrapper.setWorkspaceSubdirectory("workspaceSubdirectory");
+        String nodeJSVersion = npmBuildWrapper.getWorkspaceSubdirectory();
+        Assert.assertEquals("workspaceSubdirectory", nodeJSVersion);
     }
 
 }

@@ -2,7 +2,7 @@
   <f:entry field="credentialsId" title="${%NPM Registry Credentials}">
     <c:select />
   </f:entry>
-  <f:entry title="${%NodeJS Version}" field="nodeJSVersions">
+  <f:entry title="${%Workspace Subdirectory (containing .nvmrc)}" field="workspaceSubdirectory">
     <f:textbox />
   </f:entry>
 </j:jelly>

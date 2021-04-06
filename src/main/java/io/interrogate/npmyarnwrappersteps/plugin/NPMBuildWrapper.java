@@ -17,6 +17,7 @@ import hudson.util.ListBoxModel;
 import io.interrogate.npmyarnwrappersteps.plugin.credentials.NPMCredentialsImplementation;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -44,29 +45,31 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
     private static final long serialVersionUID = 1L;
 
     private final String credentialsId;
-    private String nodeJSVersion = NVMUtilities.DEFAULT_NODEJS_VERSION;
     private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
+    private String workspaceSubdirectory = "";
+
+    public static final String JENKINS_NPM_WORKSPACE_SUBDIRECTORY = "JENKINS_NPM_WORKSPACE_SUBDIRECTORY";
+    public static final String JENKINS_NVM_SETUP_FOR_BUILD_S = "JENKINS_NVM_SETUP_FOR_BUILD_%s";
 
     @DataBoundConstructor
     public NPMBuildWrapper(String credentialsId) {
         this.credentialsId = credentialsId;
     }
 
-    @NonNull
-    public String getNodeJSVersion() {
-        return nodeJSVersion;
-    }
-
-    @DataBoundSetter
-    public void setNodeJSVersion(String nodeJSVersion) {
-        this.nodeJSVersion = nodeJSVersion;
-    }
-
     public String getCredentialsId() {
         return credentialsId;
     }
 
-    @SuppressWarnings("rawtypes")
+    public String getWorkspaceSubdirectory() {
+        return workspaceSubdirectory;
+    }
+
+    @DataBoundSetter
+    public void setWorkspaceSubdirectory(String workspaceSubdirectory) {
+        this.workspaceSubdirectory = workspaceSubdirectory;
+    }
+
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
     public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener,
                       EnvVars envVars) throws IOException, InterruptedException {
@@ -77,8 +80,11 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         String npmConfigUserConfig = String.format("%s/.npmrc", envVars.get("WORKSPACE_TMP"));
         envVars.put("NPM_CONFIG_USERCONFIG", npmConfigUserConfig);
         context.env("NPM_CONFIG_USERCONFIG", npmConfigUserConfig);
+        if (StringUtils.isNotBlank(workspaceSubdirectory)) {
+            context.env(NPMBuildWrapper.JENKINS_NPM_WORKSPACE_SUBDIRECTORY, workspaceSubdirectory);
+        }
         List<String> tempConfigFiles = Arrays.asList(npmConfigUserConfig);
-        context.setDisposer(new CleanupDisposer(new HashSet<String>(tempConfigFiles)));
+        context.setDisposer(new CleanupDisposer(new HashSet<>(tempConfigFiles)));
         NPMCredentialsImplementation credential = CredentialsProvider
                 .findCredentialById(credentialsId, NPMCredentialsImplementation.class, build, Collections.emptyList());
         String _auth = null;
@@ -92,18 +98,19 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         }
         NVMUtilities.install(workspace, launcher, listener);
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars, context);
-        NVMUtilities.setNPMConfig("registry", npmRegistry, nodeJSVersion, workspace, launcher, logger, envVars);
+        NVMUtilities.setNPMConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger, envVars);
         if (_auth != null && email != null) {
-            NVMUtilities.setNPMConfig("email", email, nodeJSVersion, workspace, launcher, logger, envVars);
-            NVMUtilities.setNPMConfig("_auth", _auth, nodeJSVersion, workspace, launcher, logger, envVars);
+            NVMUtilities.setNPMConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
+            NVMUtilities.setNPMConfig("_auth", _auth, workspaceSubdirectory, workspace, launcher, logger, envVars);
         }
-        context.env(String.format("JENKINS_NVM_SETUP_FOR_BUILD_%s", build.getId()), "TRUE");
+        context.env(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId()), "TRUE");
     }
 
     @Symbol("withNPMWrapper")
     @Extension
     public static class DescriptorImplementation extends BuildWrapperDescriptor {
 
+        @NonNull
         @Override
         public String getDisplayName() {
             return Messages.NPMBuildWrapper_SetNPMEnvironment();
@@ -145,13 +152,12 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
          */
         private static final long serialVersionUID = 1L;
 
-        private Set<String> tempFiles;
+        private final Set<String> tempFiles;
 
         public CleanupDisposer(Set<String> tempFiles) {
             this.tempFiles = tempFiles;
         }
 
-        @SuppressWarnings("rawtypes")
         @Override
         public void tearDown(Run build, FilePath workspace, Launcher launcher, TaskListener listener)
                 throws IOException, InterruptedException {
