@@ -32,8 +32,18 @@ to manage your NodeJS version.
 
 ## Steps in Freestyle Projects
 
+Both npm and yarn build steps are provided. If no wrapper is provided, the plugin will attempt to set up nvm, NodeJS and
+yarn (for yarn build steps) based on the .nvmrc in the working directory or the subdirectory (if specified). If no
+.nvmrc is present, it will use the current release of NodeJS.
+
+![Select Run a yarn command or Run an npm command](images/freestyle-build-steps-1.png?raw=true "Select a build step")
+
 ### NPM Step
-![Select a credential and provide a workspace subdirectory](images/freestyle-npm-build-step.png?raw=true "Select a credential")
+
+The npm step supports anything that completes `npm run #{your command here}`. If you provide a subdirectory, the command
+will be executed from that subdirectory of the workspace.
+
+![Enter an npm command](images/freestyle-npm-build-step-1.png?raw=true "Enter an npm command")
 
 ### Yarn Step
 
