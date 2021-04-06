@@ -6,8 +6,39 @@ Unix systems. If NodeJS and/or Yarn are not available, it installs them on deman
 using [nvm](https://github.com/nvm-sh/nvm) and
 the [yarn classic installation script](https://classic.yarnpkg.com/en/docs/install). If there is an .nvmrc file in the
 directory where the commands are to be executed, it respects the version specified there. Otherwise, it uses the latest
-stable version of NodeJS. The wrappers allow setting custom repositories, specifying an override NodeJS version and
+stable version of NodeJS. The wrapper allows specifying a workspace subdirectory (to provide an .npmrc file) and
 providing login credentials.
+
+## NPM Credentials
+Users can provide credentials for a private or corporate NPM repository by setting them up through the custom NPM Credential type. To do so, navigate to manage credentials within Jenkins and provide the appropriate url, username, user email and password.
+
+![Select NPM Login Credentials as the credential kind.](images/credentials-1.png?raw=true "Select NPM Login Credentials")
+
+![Fill in the appropriate login information.](images/credentials-2.png?raw=true "Provide the correct credentials")
+
+## Wrapper in Freestyle Projects
+
+## Steps in Freestyle Projects
+
+## Wrapper in Pipelines
+
+The plugin includes a special credential type for npm, which is used in the wrapper to support private npm repositories.
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Hello') {
+            steps {
+                withNPMWrapper('MyCredential') {
+                    npm 'init -y'
+                    npm command: 'publish'
+                }
+            }
+        }
+    }
+}
+```
 
 ## Steps in Pipelines
 
@@ -30,26 +61,6 @@ pipeline {
             steps {
                 yarn command: 'init -y', workspaceSubdirectory 'some-subdirectory'
                 npm command: 'view react', workspaceSubdirectory 'some-other-subdirectory'
-            }
-        }
-    }
-}
-```
-
-## Wrapper in Pipelines
-
-The plugin includes a special credential type for npm, which is used in the wrapper to support private npm repositories.
-
-```groovy
-pipeline {
-    agent any
-    stages {
-        stage('Hello') {
-            steps {
-                withNPMWrapper('MyCredential') {
-                    npm 'init -y'
-                    npm command: 'publish'
-                }
             }
         }
     }
