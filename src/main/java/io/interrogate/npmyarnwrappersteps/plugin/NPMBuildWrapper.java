@@ -192,7 +192,6 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
             for (String tempFile : tempFiles) {
                 FilePath tempFilePath = new FilePath(new File(tempFile));
                 if (tempFilePath.exists()) {
-                    listener.getLogger().println(tempFilePath.readToString());
                     tempFilePath.delete();
                 }
             }
