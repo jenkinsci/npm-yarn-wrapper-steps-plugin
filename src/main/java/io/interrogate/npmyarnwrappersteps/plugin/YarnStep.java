@@ -16,6 +16,7 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.CheckForNull;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -45,12 +46,21 @@ public class YarnStep extends NodeStep implements SimpleBuildStep, Serializable 
             throw new AbortException(Messages.Error_OnlyUnixSystemsAreSupported());
         }
         setUpNVM(build, workspace, envVars, launcher, listener);
-        YarnUtilities.install(workspace, launcher, listener);
-        YarnUtilities.addYarnToPath(envVars);
+        setUpYarn(build, workspace, envVars, launcher, listener);
         FilePath targetDirectory = getTargetDirectory(workspace);
         boolean isInstallFromNVMRC = targetDirectory.child(".nvmrc").exists();
         ArgumentListBuilder shellCommand = NVMUtilities.getYarnCommand(command, isInstallFromNVMRC);
         doCommand(launcher, targetDirectory, envVars, shellCommand, listener.getLogger());
+    }
+
+    private void setUpYarn(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
+            throws IOException, InterruptedException {
+        boolean isYarnSetup =
+                envVars.get(String.format(NPMBuildWrapper.JENKINS_YARN_SETUP_FOR_BUILD_S, build.getId())).equals("TRUE");
+        if (!isYarnSetup) {
+            YarnUtilities.install(workspace, launcher, listener);
+        }
+        YarnUtilities.addYarnToPath(envVars);
     }
 
     @Symbol("yarn")

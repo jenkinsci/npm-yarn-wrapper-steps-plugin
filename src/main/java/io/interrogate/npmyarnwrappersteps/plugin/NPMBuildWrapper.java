@@ -39,17 +39,17 @@ import java.util.Set;
 
 public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable {
 
+    public static final String JENKINS_NPM_WORKSPACE_SUBDIRECTORY = "JENKINS_NPM_WORKSPACE_SUBDIRECTORY";
+    public static final String JENKINS_NVM_SETUP_FOR_BUILD_S = "JENKINS_NVM_SETUP_FOR_BUILD_%s";
+    public static final String JENKINS_YARN_SETUP_FOR_BUILD_S = "JENKINS_YARN_SETUP_FOR_BUILD_%s";
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-
     private final String credentialsId;
+    private boolean isYarnEnabled = true;
     private String npmRegistry = NVMUtilities.DEFAULT_NPM_REGISTRY;
     private String workspaceSubdirectory = "";
-
-    public static final String JENKINS_NPM_WORKSPACE_SUBDIRECTORY = "JENKINS_NPM_WORKSPACE_SUBDIRECTORY";
-    public static final String JENKINS_NVM_SETUP_FOR_BUILD_S = "JENKINS_NVM_SETUP_FOR_BUILD_%s";
 
     @DataBoundConstructor
     public NPMBuildWrapper(String credentialsId) {
@@ -69,6 +69,15 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         this.workspaceSubdirectory = workspaceSubdirectory;
     }
 
+    public boolean isYarnEnabled() {
+        return isYarnEnabled;
+    }
+
+    @DataBoundSetter
+    public void setYarnEnabled(boolean isYarnEnabled) {
+        this.isYarnEnabled = isYarnEnabled;
+    }
+
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Override
     public void setUp(Context context, Run build, FilePath workspace, Launcher launcher, TaskListener listener,
@@ -84,6 +93,11 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
             context.env(NPMBuildWrapper.JENKINS_NPM_WORKSPACE_SUBDIRECTORY, workspaceSubdirectory);
         }
         List<String> tempConfigFiles = Arrays.asList(npmConfigUserConfig);
+        if (isYarnEnabled) {
+            YarnUtilities.install(workspace, launcher, listener);
+            YarnUtilities.addYarnToPath(envVars);
+            tempConfigFiles = Arrays.asList(npmConfigUserConfig, String.format("%s/.yarnrc", envVars.get("HOME")));
+        }
         context.setDisposer(new CleanupDisposer(new HashSet<>(tempConfigFiles)));
         NPMCredentialsImplementation credential = CredentialsProvider
                 .findCredentialById(credentialsId, NPMCredentialsImplementation.class, build, Collections.emptyList());
@@ -101,9 +115,23 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         NVMUtilities.setNPMConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger, envVars);
         if (_auth != null && email != null) {
             NVMUtilities.setNPMConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
+            NVMUtilities
+                    .setNPMConfig("always-auth", "true", workspaceSubdirectory, workspace, launcher, logger, envVars);
             NVMUtilities.setNPMConfig("_auth", _auth, workspaceSubdirectory, workspace, launcher, logger, envVars);
+            if (isYarnEnabled) {
+                YarnUtilities.setYarnConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger,
+                        envVars);
+                YarnUtilities
+                        .setYarnConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
+                YarnUtilities
+                        .setYarnConfig("username", credential.getUsername(), workspaceSubdirectory, workspace, launcher,
+                                logger, envVars);
+            }
         }
         context.env(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId()), "TRUE");
+        if (isYarnEnabled) {
+            context.env(String.format(NPMBuildWrapper.JENKINS_YARN_SETUP_FOR_BUILD_S, build.getId()), "TRUE");
+        }
     }
 
     @Symbol("withNPMWrapper")
@@ -164,6 +192,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
             for (String tempFile : tempFiles) {
                 FilePath tempFilePath = new FilePath(new File(tempFile));
                 if (tempFilePath.exists()) {
+                    listener.getLogger().println(tempFilePath.readToString());
                     tempFilePath.delete();
                 }
             }

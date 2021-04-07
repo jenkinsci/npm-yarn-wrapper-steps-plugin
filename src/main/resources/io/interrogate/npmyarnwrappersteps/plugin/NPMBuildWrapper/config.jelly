@@ -5,4 +5,7 @@
   <f:entry title="${%Workspace Subdirectory (containing .nvmrc)}" field="workspaceSubdirectory">
     <f:textbox />
   </f:entry>
+  <f:entry title="${%Enable yarn for this build.}" field="yarnEnabled">
+    <f:checkbox/>
+  </f:entry>
 </j:jelly>
