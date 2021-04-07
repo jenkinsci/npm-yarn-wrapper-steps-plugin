@@ -112,11 +112,12 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
         }
         NVMUtilities.install(workspace, launcher, listener);
         NVMUtilities.setNVMHomeEnvironmentVariable(envVars, context);
-        NVMUtilities.setNPMConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger, envVars);
         if (_auth != null && email != null) {
-            NVMUtilities.setNPMConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
             NVMUtilities
                     .setNPMConfig("always-auth", "true", workspaceSubdirectory, workspace, launcher, logger, envVars);
+            NVMUtilities
+                    .setNPMConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger, envVars);
+            NVMUtilities.setNPMConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
             NVMUtilities.setNPMConfig("_auth", _auth, workspaceSubdirectory, workspace, launcher, logger, envVars);
             if (isYarnEnabled) {
                 YarnUtilities.setYarnConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger,
@@ -127,6 +128,9 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
                         .setYarnConfig("username", credential.getUsername(), workspaceSubdirectory, workspace, launcher,
                                 logger, envVars);
             }
+        } else {
+            NVMUtilities
+                    .setNPMConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger, envVars);
         }
         context.env(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId()), "TRUE");
         if (isYarnEnabled) {
