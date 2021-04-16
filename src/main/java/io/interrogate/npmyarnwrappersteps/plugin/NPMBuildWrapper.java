@@ -23,8 +23,8 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.springframework.lang.NonNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -142,7 +142,7 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
     @Extension
     public static class DescriptorImplementation extends BuildWrapperDescriptor {
 
-        @NonNull
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.NPMBuildWrapper_SetNPMEnvironment();

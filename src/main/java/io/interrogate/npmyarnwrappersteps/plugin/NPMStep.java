@@ -14,11 +14,12 @@ import hudson.util.ArgumentListBuilder;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.springframework.lang.NonNull;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
 
@@ -31,18 +32,18 @@ public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
     private final String command;
 
     @DataBoundConstructor
-    public NPMStep(String command) {
+    public NPMStep(@CheckForNull String command) {
         this.command = command;
     }
 
-    @NonNull
+    @Nonnull
     public String getCommand() {
-        return command;
+        return Objects.requireNonNull(command);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public void perform(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
+    public void perform(@Nonnull Run build, @Nonnull FilePath workspace, @Nonnull EnvVars envVars,
+                        @Nonnull Launcher launcher, @Nonnull TaskListener listener)
             throws IOException, InterruptedException {
         if (!launcher.isUnix()) {
             throw new AbortException(Messages.Error_OnlyUnixSystemsAreSupported());
@@ -58,12 +59,12 @@ public class NPMStep extends NodeStep implements SimpleBuildStep, Serializable {
     @Extension
     public static class DescriptorImplementation extends BuildStepDescriptor<Builder> {
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.NPMStep_RunAnNPMCommand();
         }
 
-        @SuppressWarnings("rawtypes")
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;

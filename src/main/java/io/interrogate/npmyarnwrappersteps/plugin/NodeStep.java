@@ -10,8 +10,8 @@ import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.springframework.lang.NonNull;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -19,7 +19,7 @@ public abstract class NodeStep extends Builder {
 
     private String workspaceSubdirectory = "";
 
-    @NonNull
+    @Nonnull
     public String getWorkspaceSubdirectory() {
         return workspaceSubdirectory;
     }

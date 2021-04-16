@@ -5,9 +5,9 @@ import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
 import hudson.util.Secret;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.springframework.lang.NonNull;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 public class NPMCredentialsImplementation extends BaseStandardCredentials implements NPMCredentials {
     /**
@@ -24,10 +24,10 @@ public class NPMCredentialsImplementation extends BaseStandardCredentials implem
     public NPMCredentialsImplementation(
             @CheckForNull CredentialsScope scope,
             @CheckForNull String id,
-            @NonNull String registry,
-            @NonNull String userEmail,
-            @NonNull String username,
-            @NonNull String password,
+            @Nonnull String registry,
+            @Nonnull String userEmail,
+            @Nonnull String username,
+            @Nonnull String password,
             @CheckForNull String description
     ) {
         super(scope, id, description);

@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             name('jenkins')
             url('https://repo.jenkins-ci.org/public/')
@@ -16,7 +17,7 @@ version = "0.0.2-SNAPSHOT"
 description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
 
 jenkinsPlugin {
-    jenkinsVersion = '2.277.1'
+    jenkinsVersion = '2.263.4'
     shortName = 'npm-yarn-wrapper-steps'
     displayName = 'NPM and Yarn Wrapper and Steps'
     url = 'https://github.com/jenkinsci/npm-yarn-wrapper-steps-plugin'
@@ -37,10 +38,10 @@ jenkinsPlugin {
 }
 
 repositories {
+    mavenCentral()
     maven {
         url('https://repo.jenkins-ci.org/public/')
     }
-    mavenCentral()
 }
 
 dependencies {
