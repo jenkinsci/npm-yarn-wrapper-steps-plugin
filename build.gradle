@@ -12,7 +12,7 @@ plugins {
 }
 sourceCompatibility = '1.8'
 group = 'io.jenkins.plugins'
-version = "0.0.1"
+version = "0.0.2-SNAPSHOT"
 description = 'A convenience plugin for using npm and yarn in Jenkins pipelines and freestyle builds'
 
 jenkinsPlugin {
@@ -37,8 +37,9 @@ jenkinsPlugin {
 }
 
 repositories {
-    // Use JCenter for resolving dependencies.
-    jcenter()
+    maven {
+        url('https://repo.jenkins-ci.org/public/')
+    }
     mavenCentral()
 }
 
