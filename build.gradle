@@ -51,6 +51,10 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
+changelog {
+    from 'v0.1.0'
+} 
+
 scmVersion {
     tag {
         prefix = 'v'
