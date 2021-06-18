@@ -1,5 +1,8 @@
 NPM/Yarn Wrapper and Steps Plugin
 =================================
+[![Build Status][jenkins-status]][jenkins-builds]
+[![Jenkins Plugin][plugin-version-badge]][plugin]
+[![Jenkins Plugin Installs][plugin-install-badge]][plugin]
 
 This is a pipeline-friendly Jenkins plugin that provides an npm wrapper, a yarn wrapper and npm and yarn build steps for
 Unix systems. If NodeJS and/or Yarn are not available, it installs them on demand
@@ -98,3 +101,13 @@ pipeline {
     }
 }
 ```
+
+[jenkins-status]: https://ci.jenkins.io/buildStatus/icon?job=Plugins/npm-yarn-wrapper-steps-plugin/master
+
+[plugin-version-badge]: https://img.shields.io/jenkins/plugin/v/npm-yarn-wrapper-steps.svg
+
+[plugin-install-badge]: https://img.shields.io/jenkins/plugin/i/npm-yarn-wrapper-steps.svg?color=blue
+
+[jenkins-builds]: https://ci.jenkins.io/job/Plugins/job/npm-yarn-wrapper-steps-plugin/job/master/
+
+[plugin]: https://plugins.jenkins.io/npm-yarn-wrapper-steps
