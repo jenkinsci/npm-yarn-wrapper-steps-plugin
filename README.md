@@ -108,3 +108,6 @@ pipeline {
 
 [plugin-install-badge]: https://img.shields.io/jenkins/plugin/i/npm-yarn-wrapper-steps.svg?color=blue
 
+[jenkins-builds]: https://ci.jenkins.io/job/Plugins/job/npm-yarn-wrapper-steps-plugin/job/master/
+
+[plugin]: https://plugins.jenkins.io/npm-yarn-wrapper-steps
