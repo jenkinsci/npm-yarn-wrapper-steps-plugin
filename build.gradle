@@ -52,7 +52,7 @@ dependencies {
 }
 
 changelog {
-    from 'v0.1.0'
+    from 'v0.0.2'
 } 
 
 scmVersion {
