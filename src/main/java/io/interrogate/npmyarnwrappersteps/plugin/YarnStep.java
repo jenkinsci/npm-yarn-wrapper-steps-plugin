@@ -55,8 +55,8 @@ public class YarnStep extends NodeStep implements SimpleBuildStep, Serializable 
 
     private void setUpYarn(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
-        boolean isYarnSetup =
-                envVars.get(String.format(NPMBuildWrapper.JENKINS_YARN_SETUP_FOR_BUILD_S, build.getId())).equals("TRUE");
+        String isYarnSetupEnvVariable = envVars.get(String.format(NPMBuildWrapper.JENKINS_YARN_SETUP_FOR_BUILD_S, build.getId()));
+        boolean isYarnSetup = isYarnSetupEnvVariable != null && isYarnSetupEnvVariable.equals("TRUE");
         if (!isYarnSetup) {
             YarnUtilities.install(workspace, launcher, listener);
         }

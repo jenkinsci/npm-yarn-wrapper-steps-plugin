@@ -50,8 +50,8 @@ public abstract class NodeStep extends Builder {
     @SuppressWarnings("rawtypes")
     public void setUpNVM(Run build, FilePath workspace, EnvVars envVars, Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
-        boolean isNVMSetup =
-                envVars.get(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId())).equals("TRUE");
+        String isNVMSetupEnvVariable = envVars.get(String.format(NPMBuildWrapper.JENKINS_NVM_SETUP_FOR_BUILD_S, build.getId()));
+        boolean isNVMSetup = isNVMSetupEnvVariable != null && isNVMSetupEnvVariable.equals("TRUE");
         if (!isNVMSetup) {
             NVMUtilities.install(workspace, launcher, listener);
             NVMUtilities.setNVMHomeEnvironmentVariable(envVars);
