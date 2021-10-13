@@ -33,6 +33,7 @@ public class NVMUtilities {
         nvmInstaller.chmod(0755);
         launcher.launch()
                 .pwd(workspace)
+                .envs("NVM_METHOD=script")
                 .cmdAsSingleString("bash -c ./nvm-installer")
                 .stdout(listener.getLogger())
                 .stderr(listener.getLogger())
