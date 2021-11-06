@@ -78,6 +78,12 @@ public class NVMUtilities {
 
     }
 
+    public static boolean isInstallFromNVMRC(FilePath workspace, String workspaceSubdirectory)
+            throws IOException, InterruptedException {
+        FilePath targetDirectory = NVMUtilities.getTargetDirectory(workspace, workspaceSubdirectory);
+        return targetDirectory.child(".nvmrc").exists();
+    }
+
     public static ArgumentListBuilder getCommand(String command, boolean isInstallFromNVMRC,
                                                  NodeExecutor nodeExecutor) {
         String nodeJSVersion = isInstallFromNVMRC ? "" : NVMUtilities.DEFAULT_NODEJS_VERSION;
@@ -95,13 +101,8 @@ public class NVMUtilities {
     public static void setNPMConfig(String key, String value, String workspaceSubdirectory, FilePath workspace,
                                     Launcher launcher, PrintStream logger, EnvVars envVars)
             throws IOException, InterruptedException {
-        FilePath targetDirectory = getTargetDirectory(workspace, workspaceSubdirectory);
-        boolean isInstallFromNVMRC = false;
-        if (targetDirectory.child(".nvmrc").exists()) {
-            isInstallFromNVMRC = true;
-        }
         ArgumentListBuilder _authCommand = NVMUtilities
-                .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), isInstallFromNVMRC,
+                .getCommand(String.format(NPM_CONFIG_COMMAND, key, value), isInstallFromNVMRC(workspace, workspaceSubdirectory),
                         NVMUtilities.NodeExecutor.NPM);
         int statusCode = launcher.launch()
                 .quiet(true)
