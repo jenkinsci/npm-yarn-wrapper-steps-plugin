@@ -14,6 +14,7 @@ import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ListBoxModel;
+import hudson.util.VersionNumber;
 import io.interrogate.npmyarnwrappersteps.plugin.credentials.NPMCredentialsImplementation;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildWrapper;
@@ -120,13 +121,19 @@ public class NPMBuildWrapper extends SimpleBuildWrapper implements Serializable 
             NVMUtilities.setNPMConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
             NVMUtilities.setNPMConfig("_auth", _auth, workspaceSubdirectory, workspace, launcher, logger, envVars);
             if (isYarnEnabled) {
-                YarnUtilities.setYarnConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher, logger,
-                        envVars);
-                YarnUtilities
-                        .setYarnConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
-                YarnUtilities
-                        .setYarnConfig("username", credential.getUsername(), workspaceSubdirectory, workspace, launcher,
-                                logger, envVars);
+                String yarnVersion = YarnUtilities.getYarnVersion(workspace, launcher, workspaceSubdirectory, envVars);
+                VersionNumber yarnVersionNumber = new VersionNumber(yarnVersion);
+                if (new VersionNumber("2.0.0").compareTo(yarnVersionNumber) < 0) {
+                    YarnUtilities.setYarnConfig("registry", npmRegistry, workspaceSubdirectory, workspace, launcher,
+                            logger,
+                            envVars);
+                    YarnUtilities
+                            .setYarnConfig("email", email, workspaceSubdirectory, workspace, launcher, logger, envVars);
+                    YarnUtilities
+                            .setYarnConfig("username", credential.getUsername(), workspaceSubdirectory, workspace,
+                                    launcher,
+                                    logger, envVars);
+                }
             }
         } else {
             NVMUtilities

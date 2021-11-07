@@ -6,7 +6,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import jenkins.tasks.SimpleBuildWrapper;
+import hudson.util.ByteArrayOutputStream2;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -18,10 +18,31 @@ public class YarnUtilities {
     private static final String YARN_PATH_TEMPLATE = "%s/.yarn/bin:%s/.config/yarn/global/node_modules/.bin:%s";
     private static final String YARN_CONFIG_COMMAND = "config set %s %s";
 
+    public static boolean isYarnInstalled() throws IOException, InterruptedException {
+        FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
+        return home.child(".yarn").exists();
+    }
+
+    public static String getYarnVersion(FilePath workspace, Launcher launcher, String workspaceSubdirectory,
+                                        EnvVars envVars) throws IOException, InterruptedException {
+        if (!isYarnInstalled()) {
+            return null;
+        }
+        ByteArrayOutputStream2 outputStream = new ByteArrayOutputStream2();
+        FilePath targetDirectory = NVMUtilities.getTargetDirectory(workspace, workspaceSubdirectory);
+        launcher.launch()
+                .pwd(targetDirectory)
+                .envs(envVars)
+                .cmds(NVMUtilities.getYarnCommand(" --version",
+                        NVMUtilities.isInstallFromNVMRC(workspace, workspaceSubdirectory)))
+                .stdout(outputStream)
+                .join();
+        return outputStream.toString().trim();
+    }
+
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String yarnInstallerUrl)
             throws IOException, InterruptedException {
-        FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
-        if (home.child(".yarn").exists()) {
+        if (isYarnInstalled()) {
             return;
         }
         FilePath yarnInstaller = workspace.child("yarn-installer");
@@ -47,15 +68,11 @@ public class YarnUtilities {
     }
 
     public static void setYarnConfig(String key, String value, String workspaceSubdirectory, FilePath workspace,
-                                    Launcher launcher, PrintStream logger, EnvVars envVars)
+                                     Launcher launcher, PrintStream logger, EnvVars envVars)
             throws IOException, InterruptedException {
-        FilePath targetDirectory = NVMUtilities.getTargetDirectory(workspace, workspaceSubdirectory);
-        boolean isInstallFromNVMRC = false;
-        if (targetDirectory.child(".nvmrc").exists()) {
-            isInstallFromNVMRC = true;
-        }
         ArgumentListBuilder _authCommand = NVMUtilities
-                .getCommand(String.format(YARN_CONFIG_COMMAND, key, value), isInstallFromNVMRC,
+                .getCommand(String.format(YARN_CONFIG_COMMAND, key, value),
+                        NVMUtilities.isInstallFromNVMRC(workspace, workspaceSubdirectory),
                         NVMUtilities.NodeExecutor.YARN);
         int statusCode = launcher.launch()
                 .quiet(true)
