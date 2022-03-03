@@ -24,7 +24,7 @@ public class NVMUtilities {
     @SuppressWarnings("OctalInteger")
     public static void install(FilePath workspace, Launcher launcher, TaskListener listener, String nvmInstallerUrl)
             throws IOException, InterruptedException {
-        FilePath home = FilePath.getHomeDirectory(FilePath.localChannel);
+        FilePath home = FilePath.getHomeDirectory(launcher.getChannel() != null ? launcher.getChannel() : FilePath.localChannel);
         if (home.child(".nvm/nvm.sh").exists()) {
             return;
         }
